@@ -1,0 +1,28 @@
+{
+  "name": "post-it-app",
+  "version": "1.0.0",
+  "description": "Andela Bootcamp Project",
+  "main": "index.js",
+  "dependencies": {
+    "eslint": "^3.19.0",
+    "express": "^4.15.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.5.1",
+    "babel-preset-react": "^6.24.1"
+  },
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adolesamuel/post-it-app.git"
+  },
+  "author": "Adole Samuel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adolesamuel/post-it-app/issues"
+  },
+  "homepage": "https://github.com/adolesamuel/post-it-app#readme"
+}
