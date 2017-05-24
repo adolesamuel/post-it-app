@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const	bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const	firebase = require("firebase");
 
@@ -21,6 +21,7 @@ let config = {
 
   let db = firebase.database();
   	usersRef = db.ref('users');
+  	groupRef = db.ref('Groups');
 
 //==========================================================
 
@@ -68,8 +69,8 @@ upRoute.route('/user/signup')
 		user.displayName = req.body.uName
 		usersRef.push({
 			email : user.email,
-			username :req.body.uName,
-			password: req.body.pWord
+			username : req.body.uName,
+			password : req.body.pWord
 		});
 		console.log("User has signed up");
 		res.json({ username: req.body.uName, Password: req.body.pWord, Email : req.body.mail});
@@ -91,10 +92,16 @@ let inRoute = express.Router();
  		let email = req.body.mail;
  		let password = req.body.pWord;
  		firebase.auth().signInWithEmailAndPassword(email, password)
+ 		.then((user) =>{
+ 			firebase.auth().onAuthStateChanged((user) => {
+
+ 			})
+ 		})
  		.catch((error) =>{
  			res.json(error);
  		});
  		console.log("User"+email+" has signed in");
+ 		console.log(currentUser);
  	});
 
 ///=======================Sign out Route=======================
@@ -104,6 +111,7 @@ let inRoute = express.Router();
  		.post( (req, res) => {
  			firebase.auth().signOut()
  			.then(() => {
+ 				console.log(currentUser);
  				console.log('User signed out');
  				res.send('user signed out');
  			})
@@ -115,6 +123,25 @@ let inRoute = express.Router();
 
 //=======================Group creation route ======================
  
+	let gRoute = express.Router();
+		gRoute.route('/group')
+			.post(( req, res) => {
+			console.log("group created")
+		groupRef.push({
+			groupname : req.body.groupname,
+			Admin: { 1 : req.body.mail},
+			groupMembers: { 
+				1 : req.body.mail
+			},
+			groupMessage:{
+				1 : "You are the first user"
+			}
+		})
+			});
+
+///================================
+ //add members route
+ // add message route
 
 
 
@@ -124,6 +151,7 @@ let inRoute = express.Router();
 app.use('/', upRoute);
 app.use('/', inRoute);
 app.use('/', outRoute);
+app.use('/', gRoute);
 
 
 //This starts the server on port declared as 3555=========================================
