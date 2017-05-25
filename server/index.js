@@ -1,8 +1,7 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const	bodyParser = require('body-parser');
-const expressValidator = require('express-validator');
-const	firebase = require("firebase");
+const bodyParser = require('body-parser');
+const firebase = require("firebase");
 
 let path = require('path');
 let port = process.env.PORT || 3555;
@@ -21,6 +20,7 @@ let config = {
 
   let db = firebase.database();
   	usersRef = db.ref('users');
+  	groupRef = db.ref('Groups');
 
 //==========================================================
 
@@ -65,13 +65,12 @@ upRoute.route('/user/signup')
 		firebase.auth().createUserWithEmailAndPassword(email, password)
 	.then((user) => {
 		// add element to database
-		user.displayName = req.body.uName
 		usersRef.push({
 			email : user.email,
-			username :req.body.uName,
-			password: req.body.pWord
+			username : username,
+			password : password
 		});
-		console.log("User has signed up");
+		console.log("User: "+ user.email+" has signed up");
 		res.json({ username: req.body.uName, Password: req.body.pWord, Email : req.body.mail});
 	})
 	.catch((error) => {
@@ -91,10 +90,14 @@ let inRoute = express.Router();
  		let email = req.body.mail;
  		let password = req.body.pWord;
  		firebase.auth().signInWithEmailAndPassword(email, password)
+ 		.then((user) =>{
+ 		console.log("User"+email+" has signed in");
+ 		// console.log(user);
+ 		})
  		.catch((error) =>{
  			res.json(error);
  		});
- 		console.log("User"+email+" has signed in");
+ 		
  	});
 
 ///=======================Sign out Route=======================
@@ -114,7 +117,45 @@ let inRoute = express.Router();
  		});
 
 //=======================Group creation route ======================
- 
+ // prevent the user from creating multiple groups
+
+	let gRoute = express.Router();
+		gRoute.route('/group')
+			.post(( req, res) => {
+			let email = req.body.mail;
+			let password = req.body.pWord;
+			let groupName = req.body.groupName;
+			firebase.auth().signInWithEmailAndPassword(email, password)
+			.then((user) => {
+			firebase.auth().onAuthStateChanged((user) => {
+			if(user){
+			const groupKey = groupRef.push({
+			groupname : req.body.groupname,
+			Admin: { 1 : req.body.mail},
+			groupMembers: [req.body.mail],
+			groupMessage:[{ 
+				username: req.body.uName,
+				message: "I am the first user "}]
+		}).key;
+			}
+			else { 
+				res.send('User is not signed in');
+			}
+		});
+		});
+			res.send('Group has been created');
+		});
+
+
+
+///================================add members route===
+//to add members I need to access group, groupref.groupmembers.push(user)
+	let addRoute = express.Router();
+		addRoute.route('/group/<groupKey>/user')
+		.post(( req, res) => {
+
+		})
+
 
 
 
@@ -124,6 +165,8 @@ let inRoute = express.Router();
 app.use('/', upRoute);
 app.use('/', inRoute);
 app.use('/', outRoute);
+app.use('/', gRoute);
+app.use('/', addRoute);
 
 
 //This starts the server on port declared as 3555=========================================
