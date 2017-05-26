@@ -107,7 +107,7 @@ app.route('/group')
         groupMessage: { username: req.body.userName,
           message: 'I am the first user ' } });
     } else {
-      res.send('User is not signed in');
+      res.send(`${user.email} User is not signed in`);
     }
   });
 });
@@ -131,7 +131,6 @@ app.route('/group/:groupId/user')
   .push({ user: req.body.mail, message: req.body.mesage });
   res.send('message sent');
 });
-
 
 // This starts the server on port 3555=======
 app.listen(port);
