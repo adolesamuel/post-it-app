@@ -42,14 +42,14 @@ app.route('/user/signup')
     const password = req.body.password;
     const username = req.body.userName;
     firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then((user) => {
+    .then(() => {
 // add element to database
       usersRef.push({
-        email: user.email,
+        email: email,
         username: username,
-        password: req.body.password
+        password: password
       });
-      res.send(`User: ${user.email}has signed up`);
+      res.send(`User: ${user.email} has signed up`);
       res.json({ username: req.body.userName,
         Password: req.body.password,
         Email: req.body.mail });
@@ -68,7 +68,6 @@ app.route('/user/signin')
   firebase.auth().signInWithEmailAndPassword(email, password)
 .then((user) => {
   res.send(`User${user.email} has signed in`);
-// console.log(user);
 })
 .catch((error) => {
   res.json(error);
@@ -124,11 +123,11 @@ app.route('/group/:groupId/user')
 });
 
 // ======add message route======
-app.route('/group/:groupId/user')
+app.route('/group/:groupId/message')
 .post((req, res) => {
   const groupKey = req.params.groupId;
   firebase.database().ref(`Groups/${groupKey}/groupMessage/`)
-  .push({ user: req.body.mail, message: req.body.mesage });
+  .push({ user: req.body.mail, message: req.body.message });
   res.send('message sent');
 });
 // This starts the server on port 3555=======
