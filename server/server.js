@@ -113,6 +113,15 @@ app.route('/group')
 });
   res.send('Group has been created');
 });
+// =======Add user route=====================
+// ====add user route======
+app.route('/group/:groupId/user')
+.post((req, res) => {
+  const groupKey = req.params.groupId;
+  firebase.database().ref(`Groups/${groupKey}/groupMembers/`)
+  .push({ user: req.body.mail });
+  res.send('user added');
+});
 
 // This starts the server on port 3555=======
 app.listen(port);
