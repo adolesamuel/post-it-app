@@ -103,9 +103,9 @@ app.route('/group')
       groupRef.push({
         groupname: groupName,
         Admin: email,
-        groupMembers: [req.body.mail],
-        groupMessage: [{ username: req.body.userName,
-          message: 'I am the first user ' }] });
+        groupMembers: { username: req.body.mail },
+        groupMessage: { username: req.body.userName,
+          message: 'I am the first user ' } });
     } else {
       res.send('User is not signed in');
     }
@@ -113,8 +113,8 @@ app.route('/group')
 });
   res.send('Group has been created');
 });
+
 // =======Add user route=====================
-// ====add user route======
 app.route('/group/:groupId/user')
 .post((req, res) => {
   const groupKey = req.params.groupId;
@@ -122,6 +122,16 @@ app.route('/group/:groupId/user')
   .push({ user: req.body.mail });
   res.send('user added');
 });
+
+// =========== Add message route===============
+app.route('/group/:groupId/user')
+.post((req, res) => {
+  const groupKey = req.params.groupId;
+  firebase.database().ref(`Groups/${groupKey}/groupMessage/`)
+  .push({ user: req.body.mail, message: req.body.mesage });
+  res.send('message sent');
+});
+
 
 // This starts the server on port 3555=======
 app.listen(port);
