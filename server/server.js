@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const firebase = require('firebase');
+const path = require('path');
 
 const port = process.env.PORT || 3555;
 const app = express();
@@ -27,6 +28,10 @@ const groupRef = db.ref('Groups');
 // Body parser to parse requests into req objexts==
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(`${__dirname}/index.html`));
+});
 
 // create user if no errors exist and push to database.
 // ============signUp Route========================
